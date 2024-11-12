@@ -1,8 +1,18 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+def f(t,y):
+    return np.cos(2*t) + np.sin(3*t)
+
 def extrapolacion(a,b,alpha,TOL,hmax,hmin):
-    NK = [2,4,6,8,12,16,24,32]
+    NK = np.array([2,4,6,8,12,16,24,32])
+    Q = np.zeros((7,7))
     TO = a
     WO = alpha
     h = hmax
+    y = np.zeros(7)
+    T_k=[]
+    W = []
     FLAG = 1
     for i in range(7):
         for j in range(i):
@@ -16,7 +26,7 @@ def extrapolacion(a,b,alpha,TOL,hmax,hmin):
             W2 = WO
             W3 = W2 + HK * f(T,W2)#Primer paso de euler
             T = TO + HK
-            for j in range(HK-1):
+            for j in range(NK[k]-1):
                 W1 = W2
                 W2 = W3
                 W3 = W1 + 2*HK * f(T,W2) # Metodo de punto medio 
@@ -33,8 +43,16 @@ def extrapolacion(a,b,alpha,TOL,hmax,hmin):
             k+=1
         k-=1
         if (NFLAG == 0):
+            
+            h = h/2
+            if h < hmin :
+                print("hmin excedida")
+                FLAG = 0 
+        else:
             WO = y[1]
             TO += h
+            T_k.append(TO)
+            W.append(WO)
             if TO >= b:
                 FLAG = 0
                 print("Finalizado con exito")
@@ -42,10 +60,37 @@ def extrapolacion(a,b,alpha,TOL,hmax,hmin):
                 h = b - TO
             elif (k <= 3 and h < 0.5 * hmax):
                 h = 2 * h
-            return(TO,WO,h)
-        else:
-            h = h/2
-            if h < hmin :
-                print("hmin excedida")
-                FLAG = 0 
-    return
+    
+    return T_k, W, h
+
+def solucion_real(t):
+  return (1/2) * np.sin(2*t) - (1/3) * np.cos(3*t) + 4/3
+
+# Parámetros del problema
+a = 0
+b = 1
+alfa = 1
+TOL = 1e-9
+hmax = 0.05
+hmin = 0.005
+
+# Aplicar el método de extrapolación
+T, W, h = extrapolacion(a, b, alfa, TOL, hmax, hmin)
+
+# Calcular la solución real
+t_real = np.linspace(a, b, 100)
+y_real = solucion_real(t_real)
+
+# Imprimir los resultados
+print("T:", T)
+print("W:", W)
+print("h:", h)
+
+# Graficar los resultados
+plt.plot(T, W, label='Aproximación')
+plt.plot(t_real, y_real, label='Solución Real')
+plt.xlabel('t')
+plt.ylabel('y(t)')
+plt.title('Comparación de la Solución Aproximada y Real')
+plt.legend()
+plt.show()

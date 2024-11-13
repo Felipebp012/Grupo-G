@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 def f(t,y):
     return np.cos(2*t) + np.sin(3*t)
 
+def g(t,y):
+    return -20*y + 20 *np.sin(t) +np.cos(t)
+
 def extrapolacion(a,b,alpha,TOL,hmax,hmin):
     NK = np.array([2,4,6,8,12,16,24,32])
     Q = np.zeros((7,7))
@@ -63,34 +66,53 @@ def extrapolacion(a,b,alpha,TOL,hmax,hmin):
     
     return T_k, W, h
 
-def solucion_real(t):
-  return (1/2) * np.sin(2*t) - (1/3) * np.cos(3*t) + 4/3
+def soluciong(t):
+    return np.sin(t) + 1/np.exp(20*t)
 
-# Parámetros del problema
+def solucionf(t):
+    return (1/2) * np.sin(2*t) - (1/3) * np.cos(3*t) + 4/3
+
 a = 0
 b = 1
-alfa = 1
+alpha = 1
 TOL = 1e-9
 hmax = 0.05
 hmin = 0.005
 
-# Aplicar el método de extrapolación
-T, W, h = extrapolacion(a, b, alfa, TOL, hmax, hmin)
+T, W, h = extrapolacion(a, b, alpha, TOL, hmax, hmin)
 
-# Calcular la solución real
 t_real = np.linspace(a, b, 100)
-y_real = solucion_real(t_real)
+y_real = solucionf(t_real)
 
-# Imprimir los resultados
 print("T:", T)
 print("W:", W)
 print("h:", h)
 
-# Graficar los resultados
 plt.plot(T, W, label='Aproximación')
 plt.plot(t_real, y_real, label='Solución Real')
 plt.xlabel('t')
 plt.ylabel('y(t)')
 plt.title('Comparación de la Solución Aproximada y Real')
 plt.legend()
+plt.show()
+
+tabla_data = []
+yt = [solucionf(x) for x in T]
+for i in range(len(T)):
+    tabla_data.append([T[i],yt[i],W[i]])
+
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.axis("off")
+
+table = ax.table(
+    cellText=tabla_data,
+    colLabels=["t", "f(t)", "W = y(t)"],
+    cellLoc="center",
+    loc="center"
+)
+
+table.auto_set_font_size(False)
+table.set_fontsize(10)
+table.scale(1.2, 1.2)
+
 plt.show()

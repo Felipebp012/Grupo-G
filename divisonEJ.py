@@ -66,7 +66,7 @@ def extrapolacion(a,b,alpha,TOL,hmax,hmin):
                 h = b - TO
             elif (k <= 3 and h < 0.5 * hmax):
                 h = 2 * h   
-                
+
     return T_k, np.array(W), h_k
 
 def solucionf(t):
@@ -84,47 +84,10 @@ T, W, h = extrapolacion(a, b, alpha, TOL, hmax, hmin)
 t_real = np.linspace(a, b, 100)
 y_real = solucionf(t_real)
 
-#print("T:", T)
-#print("W:", W)
-#print("h:", h)
-
 plt.plot(T, W, label='Aproximación')
 plt.plot(t_real, y_real, label='Solución Real')
 plt.xlabel('t')
 plt.ylabel('y(t)')
 plt.title('Comparación de la Solución Aproximada y Real')
 plt.legend()
-plt.show()
-
-data = []
-yt = [solucionf(x) for x in T]
-for k in range(len(T)):
-    data.append(abs(yt[k]-W[k])) 
-
-plt.plot(T, data, label='Restos')
-plt.xlabel('t')
-plt.ylabel('Diferencia')
-plt.ylim(0,0.1)
-plt.title('Comparación de los restos')
-plt.legend()
-plt.show()
-
-tabla_data = []
-for i in range(len(T)):
-    tabla_data.append([T[i],yt[i],W[i],data[i]])
-
-fig, ax = plt.subplots(figsize=(10, 6))
-ax.axis("off")
-
-table = ax.table(
-    cellText=tabla_data,
-    colLabels=["t", "f(t)", "W = y(t)","Restos"],
-    cellLoc="center",
-    loc="center"
-)
-
-table.auto_set_font_size(False)
-table.set_fontsize(10)
-table.scale(1.2, 1.2)
-
 plt.show()
